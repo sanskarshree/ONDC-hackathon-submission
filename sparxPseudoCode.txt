@@ -1,0 +1,74 @@
+// Define data structures
+class BPlusTree {
+    // B+ Tree implementation details
+}
+
+class MapEntry {
+    pointer: BPlusTree
+    type: integer // 0 or 1
+}
+
+// Initialize Maps
+Map1: Map<seller_id, MapEntry>
+Map2: Map<pincode, MapEntry>
+
+// Function to insert a cell value into the data structure
+function insertCellValue(row: integer, col: integer, value: integer, seller_id: integer, pincode: integer) {
+    mapEntry = getMapEntry(row, col, seller_id, pincode)
+    mapEntry.pointer.insert(getKey(row, col, seller_id, pincode), value)
+}
+
+// Function to get or create MapEntry
+function getMapEntry(row: integer, col: integer, seller_id: integer, pincode: integer) {
+    if (row < col) {
+        return getOrCreateMapEntry(Map1, seller_id, 0)
+    } else {
+        return getOrCreateMapEntry(Map2, pincode, 1)
+    }
+}
+
+// Function to get or create MapEntry for Map1 or Map2
+function getOrCreateMapEntry(map: Map, key: integer, type: integer) {
+    if (map.contains(key)) {
+        return map[key]
+    } else {
+        tree = new BPlusTree()
+        map[key] = new MapEntry(tree, type)
+        return map[key]
+    }
+}
+
+// Function to generate key for BPlusTree
+function getKey(row: integer, col: integer, seller_id: integer, pincode: integer) {
+    if (row < col) {
+        return seller_id
+    } else {
+        return pincode
+    }
+}
+
+// Function to perform lookup based on row (pincodes)
+function lookupByRow(row: integer, pincode: integer) {
+    return lookup(Map2, pincode, row)
+}
+
+// Function to perform lookup based on column (seller_id)
+function lookupByColumn(col: integer, seller_id: integer) {
+    return lookup(Map1, seller_id, col)
+}
+
+// Function to perform lookup in a map
+function lookup(map: Map, key: integer, index: integer) {
+    if (map.contains(key)) {
+        return map[key].pointer.get(index)
+    }
+    return null
+}
+
+// Example usage
+insertCellValue(1, 1, 1, 123, 456)
+insertCellValue(2, 1, 0, 789, 456)
+insertCellValue(3, 1, 1, 123, 789)
+
+resultRow = lookupByRow(2, 456) // Returns 0
+resultColumn = lookupByColumn(2, 123) // Returns 1
